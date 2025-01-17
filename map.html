@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map of Uganda</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #searchButton {
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #searchButton:hover {
+            background-color: #0056b3;
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none;
+            z-index: 9999;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #overlay h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #overlay ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #overlay ul li {
+            font-size: 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        #overlay ul li:hover {
+            color: #00bfff;
+        }
+        #closeOverlay {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #closeOverlay:hover {
+            background-color: #a71d2a;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Uganda E-Learning Initiative for Education Institutions - Access Points</h1>
+    
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in various educational institutions. Each marker on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
+    
+    <button id="searchButton">Search Institutions</button>
+    
+    <div id="overlay">
+        <h2>List of Institutions</h2>
+        <ul>
+            <li onclick="focusCluster('lokopio')">Lokopio Hills Technical Institute</li>
+            <li onclick="focusCluster('busitema')">Busitema University</li>
+            <li onclick="focusCluster('mbarara')">Mbarara Institute of Science and Technology</li>
+            <li onclick="focusCluster('nkumba')">Nkumba University</li>
+            <li onclick="focusCluster('kyambogo')">Kyambogo University</li>
+            <li onclick="focusCluster('uganda_rural')">Uganda Rural Development Training Institute</li>
+        </ul>
+        <button id="closeOverlay">Close</button>
+    </div>
+    
+    <div id="map"></div>
+
+    <script>
+        let map;
+        const clusters = {};
+
+        function initMap() {
+            // Initialize the map centered at Uganda
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 1.3733, lng: 32.2903 },  // Coordinates for Uganda's center
+                zoom: 7
+            });
+
+            // Define marker clusters with descriptions
+            clusters['lokopio'] = [
+                { lat: 3.535426, lng: 31.324888, title: 'Reception', description: 'Reception Area for Lokopio.' },
+                { lat: 3.535399, lng: 31.324957, title: 'Library', description: 'Library Area for Lokopio.' },
+                { lat: 3.535435, lng: 31.324902, title: 'Bursars Office', description: 'Office for financial matters.' },
+                { lat: 3.535438, lng: 31.324923, title: 'Boardroom', description: 'Conference Room for meetings.' },
+                { lat: 3.535438, lng: 31.324922, title: 'Workshop', description: 'Workshop Area.' },
+                { lat: 3.535438, lng: 31.324921, title: 'Staff Quarters', description: 'Living quarters for staff.' }
+            ];
+
+            clusters['busitema'] = [
+                { lat: 0.756517, lng: 34.045779, title: 'Mesh Near the Generator', description: 'Mesh point near the generator at Busitema University.' },
+                { lat: 0.756107, lng: 34.045130, title: 'Mesh at the Quadrangle', description: 'Mesh point located at the Quadrangle.' },
+                { lat: 0.757686, lng: 34.044805, title: 'Mesh at the Education Block', description: 'Mesh point at the Education Block.' },
+                { lat: 0.756341, lng: 34.044482, title: 'Mesh at the Biology Lab', description: 'Mesh point located at the Biology Lab.' }
+            ];
+
+            // Add markers with interactive info windows
+            for (let clusterName in clusters) {
+                clusters[clusterName].forEach(location => {
+                    const marker = new google.maps.Marker({
+                        position: { lat: location.lat, lng: location.lng },
+                        map: map,
+                        title: location.title
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `<strong>${location.title}</strong><br>${location.description}`
+                    });
+
+                    marker.addListener('click', () => {
+                        infoWindow.open(map, marker);
+                    });
+                });
+            }
+        }
+
+        // Function to focus on a specific cluster
+        function focusCluster(clusterName) {
+            if (clusters[clusterName]) {
+                const bounds = new google.maps.LatLngBounds();
+                clusters[clusterName].forEach(location => {
+                    bounds.extend({ lat: location.lat, lng: location.lng });
+                });
+                map.fitBounds(bounds);
+            }
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Overlay functionality
+        document.getElementById('searchButton').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'block';
+        });
+
+        document.getElementById('closeOverlay').addEventListener('click', function() {
+            document.getElementById('overlay').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
