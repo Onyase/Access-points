@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -100,6 +100,9 @@
             <li onclick="focusCluster('nkumba')">Nkumba University</li>
             <li onclick="focusCluster('kyambogo')">Kyambogo University</li>
             <li onclick="focusCluster('uganda_rural')">Uganda Rural Development Training Institute</li>
+            <li onclick="focusCluster('sweswe')">Sweswe</li>
+            <li onclick="focusCluster('mat_abacus')">Mat Abacus</li>
+            <li onclick="focusCluster('must')">MUST</li>
         </ul>
         <button id="closeOverlay">Close</button>
     </div>
@@ -132,6 +135,39 @@
                 { lat: 0.756107, lng: 34.045130, title: 'Mesh at the Quadrangle', description: 'Mesh point located at the Quadrangle.' },
                 { lat: 0.757686, lng: 34.044805, title: 'Mesh at the Education Block', description: 'Mesh point at the Education Block.' },
                 { lat: 0.756341, lng: 34.044482, title: 'Mesh at the Biology Lab', description: 'Mesh point located at the Biology Lab.' }
+            ];
+
+            clusters['mat_abacus'] = [
+                { lat: 0.3212391, lng: 32.6017897, title: 'Reading Room', description: 'Reading room at Mat Abacus.' },
+                { lat: 0.3210983, lng: 32.60183448, title: 'Canteen', description: 'Canteen at Mat Abacus.' },
+                { lat: 0.3212124, lng: 32.6019057, title: 'Extension Room 3', description: 'Extension Room 3 at Mat Abacus.' }
+            ];
+
+            clusters['sweswe'] = [
+                { lat: 0.366137, lng: 31.101526, title: 'Mesh Node 1', description: 'Mesh Node 1 at Sweswe.' },
+                { lat: 0.366742, lng: 31.102117, title: 'Mesh Node 2', description: 'Mesh Node 2 at Sweswe.' },
+                { lat: 0.366559, lng: 31.102214, title: 'Computer Lab 1 Access Point', description: 'Access point for Computer Lab 1.' },
+                { lat: 0.366548, lng: 31.10224, title: 'Computer Lab 2 Access Point', description: 'Access point for Computer Lab 2.' }
+            ];
+
+            clusters['must'] = [
+                { lat: -0.61754, lng: 30.656, title: 'Library Block', description: 'Library Block at MUST.' },
+                { lat: -0.61757, lng: 30.65675, title: 'MLS Girls\' Hostel', description: 'MLS Girls\' Hostel at MUST.' },
+                { lat: -0.59655, lng: 30.59909, title: 'Kihumuro Campus Mesh Node', description: 'Mesh node at Kihumuro Campus.' },
+                { lat: -0.61649, lng: 30.65599, title: 'Science Block Unifi Ac Mesh Pro', description: 'Science Block Mesh Pro at MUST.' }
+            ];
+
+            clusters['kyambogo'] = [
+                { lat: 0.35428, lng: 32.62534, title: 'Mesh Near Boardroom', description: 'Mesh point near the boardroom.' },
+                { lat: 0.35392, lng: 32.62565, title: 'Dining', description: 'Dining area at Kyambogo.' },
+                { lat: 0.35365, lng: 32.62551, title: 'Parking', description: 'Parking area.' },
+                { lat: 0.35349, lng: 32.62565, title: 'Visual Hi-Tech Resource Room', description: 'Kyambogo Visual Hi-Tech Resource Room.' },
+                { lat: 0.35414, lng: 32.6255, title: 'Board Room', description: 'Kyambogo University Board Room.' },
+                { lat: 0.35401, lng: 32.62533, title: 'Room 11', description: 'Room 11.' },
+                { lat: 0.35429, lng: 32.62529, title: 'Room 15', description: 'Room 15.' },
+                { lat: 0.355, lng: 32.62502, title: 'Near Room F (Mesh)', description: 'Mesh near Room F.' },
+                { lat: 0.35476, lng: 32.6254, title: 'Behind Room 28', description: 'Mesh behind Room 28.' },
+                { lat: 0.35412, lng: 32.6254, title: 'Room 8', description: 'Room 8.' }
             ];
 
             // Add markers with interactive info windows
