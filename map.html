@@ -80,30 +80,6 @@
         #closeOverlay:hover {
             background-color: #a71d2a;
         }
-        #legend {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-        }
-        #legend h3 {
-            margin: 0 0 10px;
-            font-size: 16px;
-        }
-        #legend div {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        #legend img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-        }
     </style>
     <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
@@ -132,12 +108,6 @@
     </div>
     
     <div id="map"></div>
-    <div id="legend">
-        <h3>Legend</h3>
-        <div><img src="https://img.icons8.com/ios-filled/50/wifi--v1.png" alt="Access Point"> Access Point</div>
-        <div><img src="https://img.icons8.com/ios-filled/50/network.png" alt="Mesh Node"> Mesh Node</div>
-        <div><img src="https://img.icons8.com/ios-filled/50/route.png" alt="Best Route"> Best Route</div>
-    </div>
 
     <script>
         let map;
@@ -151,23 +121,53 @@
             });
 
             // Define marker clusters with descriptions
+            clusters['lokopio'] = [
+                { lat: 3.535426, lng: 31.324888, title: 'Reception', description: 'Reception Area for Lokopio.' },
+                { lat: 3.535399, lng: 31.324957, title: 'Library', description: 'Library Area for Lokopio.' },
+                { lat: 3.535435, lng: 31.324902, title: 'Bursars Office', description: 'Office for financial matters.' },
+                { lat: 3.535438, lng: 31.324923, title: 'Boardroom', description: 'Conference Room for meetings.' },
+                { lat: 3.535438, lng: 31.324922, title: 'Workshop', description: 'Workshop Area.' },
+                { lat: 3.535438, lng: 31.324921, title: 'Staff Quarters', description: 'Living quarters for staff.' }
+            ];
+
             clusters['busitema'] = [
-                { lat: 0.756517, lng: 34.045779, title: 'Mesh Near the Generator', description: 'Mesh point near the generator at Busitema University.', icon: 'https://img.icons8.com/ios-filled/50/network.png' },
-                { lat: 0.756107, lng: 34.045130, title: 'Mesh at the Quadrangle', description: 'Mesh point located at the Quadrangle.', icon: 'https://img.icons8.com/ios-filled/50/network.png' },
-                { lat: 0.757686, lng: 34.044805, title: 'Mesh at the Education Block', description: 'Mesh point at the Education Block.', icon: 'https://img.icons8.com/ios-filled/50/network.png' },
-                { lat: 0.756341, lng: 34.044482, title: 'Mesh at the Biology Lab', description: 'Mesh point located at the Biology Lab.', icon: 'https://img.icons8.com/ios-filled/50/network.png' },
-                { lat: 0.7577778, lng: 34.0447222, title: 'Education Block Solar Powered WiFi Router', description: 'Solar-powered WiFi router at the Education Block.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7563889, lng: 34.0444444, title: 'Biology Lab Solar Powered WiFi Router', description: 'Solar-powered WiFi router at the Biology Lab.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7561111, lng: 34.0450000, title: 'Library Solar Powered WiFi Router', description: 'Solar-powered WiFi router at the Library.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7563889, lng: 34.0458333, title: 'Multipurpose Block Solar Powered WiFi Router', description: 'Solar-powered WiFi router at the Multipurpose Block.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7566667, lng: 34.0452778, title: 'Multipurpose Block Unifi AC Mesh Pro', description: 'Unifi AC Mesh Pro at the Multipurpose Block.', icon: 'https://img.icons8.com/ios-filled/50/network.png' },
-                { lat: 0.7563889, lng: 34.0441667, title: 'Biology Lab Office Indoor AP', description: 'Indoor access point at the Biology Lab Office.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7561111, lng: 34.0458333, title: 'Library Indoor AP', description: 'Indoor access point at the Library.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7561111, lng: 34.0444444, title: 'Main Hall Indoor AP', description: 'Indoor access point at the Main Hall.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7563889, lng: 34.0455556, title: 'Conference Hall Indoor AP', description: 'Indoor access point at the Conference Hall.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7561111, lng: 34.0458333, title: 'Renovated Block Indoor AP', description: 'Indoor access point at the Renovated Block.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7566667, lng: 34.0461111, title: 'New Lecture Block 1 Indoor AP', description: 'Indoor access point at New Lecture Block 1.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' },
-                { lat: 0.7566667, lng: 34.0461111, title: 'New Lecture Block 2 Indoor AP', description: 'Indoor access point at New Lecture Block 2.', icon: 'https://img.icons8.com/ios-filled/50/wifi--v1.png' }
+                { lat: 0.756517, lng: 34.045779, title: 'Mesh Near the Generator', description: 'Mesh point near the generator at Busitema University.' },
+                { lat: 0.756107, lng: 34.045130, title: 'Mesh at the Quadrangle', description: 'Mesh point located at the Quadrangle.' },
+                { lat: 0.757686, lng: 34.044805, title: 'Mesh at the Education Block', description: 'Mesh point at the Education Block.' },
+                { lat: 0.756341, lng: 34.044482, title: 'Mesh at the Biology Lab', description: 'Mesh point located at the Biology Lab.' }
+            ];
+
+            clusters['mat_abacus'] = [
+                { lat: 0.3212391, lng: 32.6017897, title: 'Reading Room', description: 'Reading room at Mat Abacus.' },
+                { lat: 0.3210983, lng: 32.60183448, title: 'Canteen', description: 'Canteen at Mat Abacus.' },
+                { lat: 0.3212124, lng: 32.6019057, title: 'Extension Room 3', description: 'Extension Room 3 at Mat Abacus.' }
+            ];
+
+            clusters['sweswe'] = [
+                { lat: 0.366137, lng: 31.101526, title: 'Mesh Node 1', description: 'Mesh Node 1 at Sweswe.' },
+                { lat: 0.366742, lng: 31.102117, title: 'Mesh Node 2', description: 'Mesh Node 2 at Sweswe.' },
+                { lat: 0.366559, lng: 31.102214, title: 'Computer Lab 1 Access Point', description: 'Access point for Computer Lab 1.' },
+                { lat: 0.366548, lng: 31.10224, title: 'Computer Lab 2 Access Point', description: 'Access point for Computer Lab 2.' }
+            ];
+
+            clusters['must'] = [
+                { lat: -0.61754, lng: 30.656, title: 'Library Block', description: 'Library Block at MUST.' },
+                { lat: -0.61757, lng: 30.65675, title: 'MLS Girls\' Hostel', description: 'MLS Girls\' Hostel at MUST.' },
+                { lat: -0.59655, lng: 30.59909, title: 'Kihumuro Campus Mesh Node', description: 'Mesh node at Kihumuro Campus.' },
+                { lat: -0.61649, lng: 30.65599, title: 'Science Block Unifi Ac Mesh Pro', description: 'Science Block Mesh Pro at MUST.' }
+            ];
+
+            clusters['kyambogo'] = [
+                { lat: 0.35428, lng: 32.62534, title: 'Mesh Near Boardroom', description: 'Mesh point near the boardroom.' },
+                { lat: 0.35392, lng: 32.62565, title: 'Dining', description: 'Dining area at Kyambogo.' },
+                { lat: 0.35365, lng: 32.62551, title: 'Parking', description: 'Parking area.' },
+                { lat: 0.35349, lng: 32.62565, title: 'Visual Hi-Tech Resource Room', description: 'Kyambogo Visual Hi-Tech Resource Room.' },
+                { lat: 0.35414, lng: 32.6255, title: 'Board Room', description: 'Kyambogo University Board Room.' },
+                { lat: 0.35401, lng: 32.62533, title: 'Room 11', description: 'Room 11.' },
+                { lat: 0.35429, lng: 32.62529, title: 'Room 15', description: 'Room 15.' },
+                { lat: 0.355, lng: 32.62502, title: 'Near Room F (Mesh)', description: 'Mesh near Room F.' },
+                { lat: 0.35476, lng: 32.6254, title: 'Behind Room 28', description: 'Mesh behind Room 28.' },
+                { lat: 0.35412, lng: 32.6254, title: 'Room 8', description: 'Room 8.' }
             ];
 
             // Add markers with interactive info windows
@@ -176,8 +176,7 @@
                     const marker = new google.maps.Marker({
                         position: { lat: location.lat, lng: location.lng },
                         map: map,
-                        title: location.title,
-                        icon: location.icon // Use the custom icon
+                        title: location.title
                     });
 
                     const infoWindow = new google.maps.InfoWindow({
@@ -189,26 +188,6 @@
                     });
                 });
             }
-
-            // Define the best route coordinates
-            const bestRouteCoordinates = [
-                { lat: 0.756517, lng: 34.045779 }, // Mesh Near the Generator
-                { lat: 0.756107, lng: 34.045130 }, // Mesh at the Quadrangle
-                { lat: 0.757686, lng: 34.044805 }, // Mesh at the Education Block
-                { lat: 0.756341, lng: 34.044482 }  // Mesh at the Biology Lab
-            ];
-
-            // Create a polyline for the best route
-            const bestRoute = new google.maps.Polyline({
-                path: bestRouteCoordinates,
-                geodesic: true,
-                strokeColor: '#FF0000', // Red color for the route
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
-
-            // Add the polyline to the map
-            bestRoute.setMap(map);
         }
 
         // Function to focus on a specific cluster
@@ -234,3 +213,4 @@
     </script>
 </body>
 </html>
+
