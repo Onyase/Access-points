@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kyambogo University - Interactive Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Uganda E-Learning Initiative for Education Institutions - Kyambogo University - Access Points- Interactive Map</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in Sweswe. Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <option value="0.35428,32.62534">Mesh Near Boardroom</option>
+            <option value="0.35392,32.62565">Dining</option>
+            <option value="0.35365,32.62551">Parking</option>
+            <option value="0.35349,32.62565">KYU-Visual Hi-Tech Resource Room</option>
+            <option value="0.35414,32.6255">Board Room</option>
+            <option value="0.35401,32.62533">Room 11</option>
+            <option value="0.35429,32.62529">Room 15</option>
+            <option value="0.355,32.62502">Near Room F (Mesh)</option>
+            <option value="0.35476,32.6254">Behind Room 28</option>
+            <option value="0.35412,32.6254">Room 8</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <option value="0.35428,32.62534">Mesh Near Boardroom</option>
+            <option value="0.35392,32.62565">Dining</option>
+            <option value="0.35365,32.62551">Parking</option>
+            <option value="0.35349,32.62565">KYU-Visual Hi-Tech Resource Room</option>
+            <option value="0.35414,32.6255">Board Room</option>
+            <option value="0.35401,32.62533">Room 11</option>
+            <option value="0.35429,32.62529">Room 15</option>
+            <option value="0.355,32.62502">Near Room F (Mesh)</option>
+            <option value="0.35476,32.6254">Behind Room 28</option>
+            <option value="0.35412,32.6254">Room 8</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at Kyambogo University
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0.35428, lng: 32.62534 }, // Centered at Mesh Near Boardroom
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                mesh: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Mesh icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                dining: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Dining icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                parking: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // Parking icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                room: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Room icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                { lat: 0.35428, lng: 32.62534, title: 'Mesh Near Boardroom', description: 'Mesh point near the boardroom.', icon: icons.mesh },
+                { lat: 0.35392, lng: 32.62565, title: 'Dining', description: 'Dining area at Kyambogo.', icon: icons.dining },
+                { lat: 0.35365, lng: 32.62551, title: 'Parking', description: 'Parking area.', icon: icons.parking },
+                { lat: 0.35349, lng: 32.62565, title: 'KYU-Visual Hi-Tech Resource Room', description: 'Visual Hi-Tech Resource Room.', icon: icons.room },
+                { lat: 0.35414, lng: 32.6255, title: 'Board Room', description: 'Main boardroom for meetings.', icon: icons.room },
+                { lat: 0.35401, lng: 32.62533, title: 'Room 11', description: 'Room 11.', icon: icons.room },
+                { lat: 0.35429, lng: 32.62529, title: 'Room 15', description: 'Room 15.', icon: icons.room },
+                { lat: 0.355, lng: 32.62502, title: 'Near Room F (Mesh)', description: 'Mesh point near Room F.', icon: icons.mesh },
+                { lat: 0.35476, lng: 32.6254, title: 'Behind Room 28', description: 'Area behind Room 28.', icon: icons.room },
+                { lat: 0.35412, lng: 32.6254, title: 'Room 8', description: 'Room 8.', icon: icons.room }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
