@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uganda E-Learning Initiative for Education Institutions - Lokopio Hills Technical Institute - Access Points</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Uganda E-Learning Initiative for Education Institutions - Lokopio Hills Technical Institute - Access Points</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in Lokopio Hills Technical Institute. Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda..</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <option value="3.5352654,31.3247547">Library Entrance</option>
+            <option value="3.5352654,31.324757">Library</option>
+            <option value="3.5353721,31.3249028">Reception</option>
+            <option value="3.5361775,31.324347">Staff Quarters</option>
+            <option value="3.5354557,31.32449">Boardroom Compound</option>
+            <option value="3.5354528,31.3245496">Boardroom</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <option value="3.5352654,31.3247547">Library Entrance</option>
+            <option value="3.5352654,31.324757">Library</option>
+            <option value="3.5353721,31.3249028">Reception</option>
+            <option value="3.5361775,31.324347">Staff Quarters</option>
+            <option value="3.5354557,31.32449">Boardroom Compound</option>
+            <option value="3.5354528,31.3245496">Boardroom</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at the Reception
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 3.5353721, lng: 31.3249028 },
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                library: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // Book icon for library
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                reception: {
+                    url: "https://cdn-icons-png.flaticon.com/512/484/484167.png", // Reception icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                staff: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Staff icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                boardroom: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Boardroom icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                { lat: 3.5352654, lng: 31.3247547, title: 'Library Entrance', description: 'Entrance to the library.', icon: icons.library },
+                { lat: 3.5352654, lng: 31.324757, title: 'Library Podium', description: 'Podium area inside the library.', icon: icons.library },
+                { lat: 3.5353721, lng: 31.3249028, title: 'Reception', description: 'Main reception area.', icon: icons.reception },
+                { lat: 3.5361775, lng: 31.324347, title: 'Staff Quarters', description: 'Living quarters for staff.', icon: icons.staff },
+                { lat: 3.5354557, lng: 31.32449, title: 'Boardroom Compound', description: 'Compound area near the boardroom.', icon: icons.boardroom },
+                { lat: 3.5354528, lng: 31.3245496, title: 'Boardroom', description: 'Main boardroom for meetings.', icon: icons.boardroom }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

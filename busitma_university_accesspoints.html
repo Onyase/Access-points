@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busitema University - Interactive Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Uganda E-Learning Initiative for Education Institutions - Busitema University- Access Points</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in Busitema University. Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <!-- Mesh Points -->
+            <option value="0.756517,34.045779">Mesh Near the Generator</option>
+            <option value="0.756107,34.045130">Mesh at the Quadrangle</option>
+            <option value="0.757686,34.044805">Mesh at the Education Block</option>
+            <option value="0.756341,34.044482">Mesh at the Biology Lab</option>
+            <!-- Outdoor Access Points -->
+            <option value="0.757686,34.044805">Education Block Solar Powered WiFi Router</option>
+            <option value="0.756341,34.044482">Biology Lab Solar Powered WiFi Router</option>
+            <option value="0.756111,34.045000">Library Solar Powered WiFi Router</option>
+            <option value="0.756194,34.045833">Multipurpose Block Solar Powered WiFi Router</option>
+            <option value="0.756222,34.045722">Multipurpose Block Unifi AC Mesh Pro</option>
+            <!-- Indoor Access Points -->
+            <option value="0.756194,34.045000">Biology Lab Office Indoor AP</option>
+            <option value="0.756111,34.045833">Library Indoor AP</option>
+            <option value="0.756111,34.044444">Main Hall Indoor AP</option>
+            <option value="0.756194,34.045555">Conference Hall Indoor AP</option>
+            <option value="0.756111,34.045833">Renovated Block Indoor AP</option>
+            <option value="0.756333,34.046111">New Lecture Block 1 Indoor AP</option>
+            <option value="0.756333,34.046111">New Lecture Block 2 Indoor AP</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <!-- Mesh Points -->
+            <option value="0.756517,34.045779">Mesh Near the Generator</option>
+            <option value="0.756107,34.045130">Mesh at the Quadrangle</option>
+            <option value="0.757686,34.044805">Mesh at the Education Block</option>
+            <option value="0.756341,34.044482">Mesh at the Biology Lab</option>
+            <!-- Outdoor Access Points -->
+            <option value="0.757686,34.044805">Education Block Solar Powered WiFi Router</option>
+            <option value="0.756341,34.044482">Biology Lab Solar Powered WiFi Router</option>
+            <option value="0.756111,34.045000">Library Solar Powered WiFi Router</option>
+            <option value="0.756194,34.045833">Multipurpose Block Solar Powered WiFi Router</option>
+            <option value="0.756222,34.045722">Multipurpose Block Unifi AC Mesh Pro</option>
+            <!-- Indoor Access Points -->
+            <option value="0.756194,34.045000">Biology Lab Office Indoor AP</option>
+            <option value="0.756111,34.045833">Library Indoor AP</option>
+            <option value="0.756111,34.044444">Main Hall Indoor AP</option>
+            <option value="0.756194,34.045555">Conference Hall Indoor AP</option>
+            <option value="0.756111,34.045833">Renovated Block Indoor AP</option>
+            <option value="0.756333,34.046111">New Lecture Block 1 Indoor AP</option>
+            <option value="0.756333,34.046111">New Lecture Block 2 Indoor AP</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at Busitema University
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0.756517, lng: 34.045779 }, // Centered at Mesh Near the Generator
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                mesh: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // Mesh icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                outdoor: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Outdoor WiFi icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                indoor: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Indoor AP icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                // Mesh Points
+                { lat: 0.756517, lng: 34.045779, title: 'Mesh Near the Generator', description: 'Mesh point near the generator.', icon: icons.mesh },
+                { lat: 0.756107, lng: 34.045130, title: 'Mesh at the Quadrangle', description: 'Mesh point at the quadrangle.', icon: icons.mesh },
+                { lat: 0.757686, lng: 34.044805, title: 'Mesh at the Education Block', description: 'Mesh point at the Education Block.', icon: icons.mesh },
+                { lat: 0.756341, lng: 34.044482, title: 'Mesh at the Biology Lab', description: 'Mesh point at the Biology Lab.', icon: icons.mesh },
+                // Outdoor Access Points
+                { lat: 0.757686, lng: 34.044805, title: 'Education Block Solar Powered WiFi Router', description: 'Solar powered WiFi router at the Education Block.', icon: icons.outdoor },
+                { lat: 0.756341, lng: 34.044482, title: 'Biology Lab Solar Powered WiFi Router', description: 'Solar powered WiFi router at the Biology Lab.', icon: icons.outdoor },
+                { lat: 0.756111, lng: 34.045000, title: 'Library Solar Powered WiFi Router', description: 'Solar powered WiFi router at the Library.', icon: icons.outdoor },
+                { lat: 0.756194, lng: 34.045833, title: 'Multipurpose Block Solar Powered WiFi Router', description: 'Solar powered WiFi router at the Multipurpose Block.', icon: icons.outdoor },
+                { lat: 0.756222, lng: 34.045722, title: 'Multipurpose Block Unifi AC Mesh Pro', description: 'Unifi AC Mesh Pro at the Multipurpose Block.', icon: icons.outdoor },
+                // Indoor Access Points
+                { lat: 0.756194, lng: 34.045000, title: 'Biology Lab Office Indoor AP', description: 'Indoor access point at the Biology Lab office.', icon: icons.indoor },
+                { lat: 0.756111, lng: 34.045833, title: 'Library Indoor AP', description: 'Indoor access point at the Library.', icon: icons.indoor },
+                { lat: 0.756111, lng: 34.044444, title: 'Main Hall Indoor AP', description: 'Indoor access point at the Main Hall.', icon: icons.indoor },
+                { lat: 0.756194, lng: 34.045555, title: 'Conference Hall Indoor AP', description: 'Indoor access point at the Conference Hall.', icon: icons.indoor },
+                { lat: 0.756111, lng: 34.045833, title: 'Renovated Block Indoor AP', description: 'Indoor access point at the Renovated Block.', icon: icons.indoor },
+                { lat: 0.756333, lng: 34.046111, title: 'New Lecture Block 1 Indoor AP', description: 'Indoor access point at the New Lecture Block 1.', icon: icons.indoor },
+                { lat: 0.756333, lng: 34.046111, title: 'New Lecture Block 2 Indoor AP', description: 'Indoor access point at the New Lecture Block 2.', icon: icons.indoor }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

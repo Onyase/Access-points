@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAT ABACUS Business School - Interactive Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>MAT ABACUS Business School</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in MAT ABACUS Business School. Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <option value="0.32121,32.60193">Reading Room</option>
+            <option value="0.32113,32.6019">First Floor Lecture Hall 2</option>
+            <option value="0.32113,32.60192">Second Floor Lecture Hall 3</option>
+            <option value="0.32124,32.60184">Ground Floor Reading Room</option>
+            <option value="0.32128,32.60185">First Floor Reading Room</option>
+            <option value="0.32113,32.60183">Cafeteria</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <option value="0.32121,32.60193">Reading Room</option>
+            <option value="0.32113,32.6019">First Floor Lecture Hall 2</option>
+            <option value="0.32113,32.60192">Second Floor Lecture Hall 3</option>
+            <option value="0.32124,32.60184">Ground Floor Reading Room</option>
+            <option value="0.32128,32.60185">First Floor Reading Room</option>
+            <option value="0.32113,32.60183">Cafeteria</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at Sweswe
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0.32121, lng: 32.60193 }, // Centered at Reading Room
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                readingRoom: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // Reading room icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                lectureHall: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Lecture hall icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                cafeteria: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Cafeteria icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                { lat: 0.32121, lng: 32.60193, title: 'Reading Room', description: 'Main reading room at Sweswe.', icon: icons.readingRoom },
+                { lat: 0.32113, lng: 32.6019, title: 'First Floor Lecture Hall 2', description: 'Lecture hall on the first floor.', icon: icons.lectureHall },
+                { lat: 0.32113, lng: 32.60192, title: 'Second Floor Lecture Hall 3', description: 'Lecture hall on the second floor.', icon: icons.lectureHall },
+                { lat: 0.32124, lng: 32.60184, title: 'Ground Floor Reading Room', description: 'Reading room on the ground floor.', icon: icons.readingRoom },
+                { lat: 0.32128, lng: 32.60185, title: 'First Floor Reading Room', description: 'Reading room on the first floor.', icon: icons.readingRoom },
+                { lat: 0.32113, lng: 32.60183, title: 'Cafeteria', description: 'Cafeteria for students and staff.', icon: icons.cafeteria }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
