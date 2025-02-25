@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nkumba University - Interactive Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Nkumba University - Interactive Map</h1>
+    <p>This map displays custom icons for locations at Nkumba University and allows you to select the best route between two points.</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <option value="0.109272,32.510398">Reading Room</option>
+            <option value="0.109272,32.510398">SBA Dean’s Office</option>
+            <option value="0.109272,32.510398">Library First Floor</option>
+            <option value="0.109272,32.510398">Guild Cafe Mesh Node</option>
+            <option value="0.110737,32.514079">Forest Area Mesh Node 2</option>
+            <option value="0.111920,32.513518">Admissions Office</option>
+            <option value="0.110737,32.514079">School of SCIAD, near the sewing area and near the Sciad gate</option>
+            <option value="0.111090,32.513518">Outside Mpanga Library</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <option value="0.109272,32.510398">Reading Room</option>
+            <option value="0.109272,32.510398">SBA Dean’s Office</option>
+            <option value="0.109272,32.510398">Library First Floor</option>
+            <option value="0.109272,32.510398">Guild Cafe Mesh Node</option>
+            <option value="0.110737,32.514079">Forest Area Mesh Node 2</option>
+            <option value="0.111920,32.513518">Admissions Office</option>
+            <option value="0.110737,32.514079">School of SCIAD, near the sewing area and near the Sciad gate</option>
+            <option value="0.111090,32.513518">Outside Mpanga Library</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at Nkumba University
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0.109272, lng: 32.510398 }, // Centered at Reading Room
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                readingRoom: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // Reading room icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                office: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Office icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                mesh: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Mesh node icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                library: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Library icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                { lat: 0.109272, lng: 32.510398, title: 'Reading Room', description: 'Reading room at Nkumba University.', icon: icons.readingRoom },
+                { lat: 0.109272, lng: 32.510398, title: 'SBA Dean’s Office', description: 'Office of the Dean of the School of Business Administration.', icon: icons.office },
+                { lat: 0.109272, lng: 32.510398, title: 'Library First Floor', description: 'First floor of the library.', icon: icons.library },
+                { lat: 0.109272, lng: 32.510398, title: 'Guild Cafe Mesh Node', description: 'Mesh node near the Guild Cafe.', icon: icons.mesh },
+                { lat: 0.110737, lng: 32.514079, title: 'Forest Area Mesh Node 2', description: 'Mesh node in the forest area.', icon: icons.mesh },
+                { lat: 0.111920, lng: 32.513518, title: 'Admissions Office', description: 'Admissions office at Nkumba University.', icon: icons.office },
+                { lat: 0.110737, lng: 32.514079, title: 'School of SCIAD, near the sewing area and near the Sciad gate', description: 'Location near the School of SCIAD.', icon: icons.office },
+                { lat: 0.111090, lng: 32.513518, title: 'Outside Mpanga Library', description: 'Area outside the Mpanga Library.', icon: icons.library }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
