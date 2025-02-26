@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Uganda Rural Development and Training Programmme (URDT) - Interactive Map</title>
+    <title>Uganda Rural Development and Training Programme (URDT) - Interactive Map</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,8 +53,8 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
 </head>
 <body>
-    <h1>Uganda E-Learning Initiative for Education Institutions -  Uganda Rural Development and Training Programmme (URDT)- Access Points</h1>
-    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in  Uganda Rural Development and Training Programmme (URDT). Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
+    <h1>Uganda E-Learning Initiative for Education Institutions - Uganda Rural Development and Training Programme (URDT) - Access Points</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in Uganda Rural Development and Training Programme (URDT). Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
 
     <div id="route-panel">
         <label for="start">Start:</label>
@@ -95,7 +95,7 @@
         let directionsRenderer;
 
         function initMap() {
-            // Initialize the map centered at Nkumba University
+            // Initialize the map centered at URDT
             map = new google.maps.Map(document.getElementById('map'), {
                 center: { lat: 0.9424450, lng: 30.8187520 }, // Centered at ARU URDT
                 zoom: 18
@@ -124,10 +124,10 @@
 
             // Define the locations
             const locations = [
-                { lat: 0.9424450, lng: 30.8187520, title: 'ARU URDT', description: 'ARU URDT location at Nkumba University.', icon: icons.urdt },
+                { lat: 0.9424450, lng: 30.8187520, title: 'ARU URDT', description: 'ARU URDT location at Uganda Rural Development and Training Programme (URDT).', icon: icons.urdt },
                 { lat: 0.9426510, lng: 30.8173830, title: 'CompLab1-1', description: 'Computer Lab 1-1.', icon: icons.computerLab },
                 { lat: 0.9424300, lng: 30.8176240, title: 'CompLab1-2', description: 'Computer Lab 1-2.', icon: icons.computerLab },
-                { lat: 0.9427840, lng: 30.8165720, title: 'Admin Block', description: 'Administrative block at Nkumba University.', icon: icons.admin },
+                { lat: 0.9427840, lng: 30.8165720, title: 'Admin Block', description: 'Administrative block at URDT.', icon: icons.admin },
                 { lat: 0.9426890, lng: 30.8174540, title: 'CompLab2-1', description: 'Computer Lab 2-1.', icon: icons.computerLab },
                 { lat: 0.9426660, lng: 30.8174400, title: 'CompLab2-2', description: 'Computer Lab 2-2.', icon: icons.computerLab }
             ];
