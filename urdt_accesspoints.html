@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Uganda Rural Development and Training Programmme (URDT) - Interactive Map</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 20px auto;
+            width: 80%;
+        }
+        #route-panel {
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 80%;
+            text-align: left;
+        }
+        #route-panel label {
+            font-weight: bold;
+        }
+        #route-panel select, #route-panel button {
+            margin: 5px;
+            padding: 5px;
+        }
+        marquee {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-7kcuQYGdqeFkjWcLwZOiuOfg1TgTX8M&callback=initMap" async defer></script>
+</head>
+<body>
+    <h1>Uganda E-Learning Initiative for Education Institutions -  Uganda Rural Development and Training Programmme (URDT)- Access Points</h1>
+    <p>This interactive map provides a visual representation of key access points for the Uganda E-Learning Initiative in  Uganda Rural Development and Training Programmme (URDT). Each icon on the map represents a location where educational infrastructure is being integrated to support digital learning. These locations play a vital role in enhancing access to educational resources and improving learning outcomes for students and staff in Uganda.</p>
+
+    <div id="route-panel">
+        <label for="start">Start:</label>
+        <select id="start">
+            <option value="">Select a starting point</option>
+            <option value="0.9424450,30.8187520">ARU URDT</option>
+            <option value="0.9426510,30.8173830">CompLab1-1</option>
+            <option value="0.9424300,30.8176240">CompLab1-2</option>
+            <option value="0.9427840,30.8165720">Admin Block</option>
+            <option value="0.9426890,30.8174540">CompLab2-1</option>
+            <option value="0.9426660,30.8174400">CompLab2-2</option>
+        </select>
+
+        <label for="end">End:</label>
+        <select id="end">
+            <option value="">Select a destination</option>
+            <option value="0.9424450,30.8187520">ARU URDT</option>
+            <option value="0.9426510,30.8173830">CompLab1-1</option>
+            <option value="0.9424300,30.8176240">CompLab1-2</option>
+            <option value="0.9427840,30.8165720">Admin Block</option>
+            <option value="0.9426890,30.8174540">CompLab2-1</option>
+            <option value="0.9426660,30.8174400">CompLab2-2</option>
+        </select>
+
+        <button onclick="calculateRoute()">Get Route</button>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Marquee at the bottom -->
+    <marquee>
+        Copyright © 2025 Cyber School Technology Solutions | Powered by Cyber School Technology Solutions in partnership with MasterCard Foundation Uganda
+    </marquee>
+
+    <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+
+        function initMap() {
+            // Initialize the map centered at Nkumba University
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 0.9424450, lng: 30.8187520 }, // Centered at ARU URDT
+                zoom: 18
+            });
+
+            // Initialize Directions Service and Renderer
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer();
+            directionsRenderer.setMap(map);
+
+            // Define custom icons
+            const icons = {
+                computerLab: {
+                    url: "https://cdn-icons-png.flaticon.com/512/619/619032.png", // Computer lab icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                admin: {
+                    url: "https://cdn-icons-png.flaticon.com/512/3036/3036570.png", // Admin block icon
+                    scaledSize: new google.maps.Size(40, 40)
+                },
+                urdt: {
+                    url: "https://cdn-icons-png.flaticon.com/512/167/167756.png", // URDT icon
+                    scaledSize: new google.maps.Size(40, 40)
+                }
+            };
+
+            // Define the locations
+            const locations = [
+                { lat: 0.9424450, lng: 30.8187520, title: 'ARU URDT', description: 'ARU URDT location at Nkumba University.', icon: icons.urdt },
+                { lat: 0.9426510, lng: 30.8173830, title: 'CompLab1-1', description: 'Computer Lab 1-1.', icon: icons.computerLab },
+                { lat: 0.9424300, lng: 30.8176240, title: 'CompLab1-2', description: 'Computer Lab 1-2.', icon: icons.computerLab },
+                { lat: 0.9427840, lng: 30.8165720, title: 'Admin Block', description: 'Administrative block at Nkumba University.', icon: icons.admin },
+                { lat: 0.9426890, lng: 30.8174540, title: 'CompLab2-1', description: 'Computer Lab 2-1.', icon: icons.computerLab },
+                { lat: 0.9426660, lng: 30.8174400, title: 'CompLab2-2', description: 'Computer Lab 2-2.', icon: icons.computerLab }
+            ];
+
+            // Add markers with custom icons and info windows
+            locations.forEach(location => {
+                const marker = new google.maps.Marker({
+                    position: { lat: location.lat, lng: location.lng },
+                    map: map,
+                    title: location.title,
+                    icon: location.icon
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${location.title}</strong><br>${location.description}`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            const start = document.getElementById('start').value;
+            const end = document.getElementById('end').value;
+
+            if (!start || !end) {
+                alert("Please select both a starting point and a destination.");
+                return;
+            }
+
+            const startCoords = start.split(',');
+            const endCoords = end.split(',');
+
+            const request = {
+                origin: { lat: parseFloat(startCoords[0]), lng: parseFloat(startCoords[1]) },
+                destination: { lat: parseFloat(endCoords[0]), lng: parseFloat(endCoords[1]) },
+                travelMode: 'WALKING' // You can change this to DRIVING, BICYCLING, etc.
+            };
+
+            directionsService.route(request, (result, status) => {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(result);
+                } else {
+                    alert("Could not calculate route. Please try again.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
